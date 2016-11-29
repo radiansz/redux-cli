@@ -42,7 +42,7 @@ export default class Blueprint {
     if (this._files) { return this._files; }
 
     let filesPath = this.filesPath();
-
+    console.log(filesPath);
     if (fileExists(filesPath)) {
       this._files = walkSync(filesPath);
     } else {
@@ -207,6 +207,10 @@ export default class Blueprint {
   }
 
   _process(options, beforeHook, process, afterHook) {
+    if (options.path) {
+      this.outPath = options.path;
+    }
+
     const locals = this._locals(options);
     return Promise.resolve()
       .then(beforeHook.bind(this, options, locals))
@@ -216,6 +220,7 @@ export default class Blueprint {
 
   processFiles(locals) {
     const files = this.files();
+    console.log('111', files);
     const fileInfos = files.map(file => this.buildFileInfo(locals, file));
     this.ui.writeDebug(`built file infos: ${fileInfos.length}`);
     const filesToWrite = fileInfos.filter(info => info.isFile());
@@ -226,19 +231,24 @@ export default class Blueprint {
   buildFileInfo(locals, file) {
     const mappedPath = this.mapFile(file, locals);
     this.ui.writeDebug(`mapped path: ${mappedPath}`);
+    console.log('!!!', mappedPath, {
+      originalPath: this.srcPath(file),
+      mappedPath: this.destPath(mappedPath, this.outPath),
+      outputPath: this.destPath(file, this.outPath)
+    });
 
     return new FileInfo({
       ui: this.ui,
       templateVariables: locals,
       originalPath: this.srcPath(file),
-      mappedPath: this.destPath(mappedPath),
-      outputPath: this.destPath(file)
+      mappedPath: this.destPath(mappedPath, this.outPath),
+      outputPath: this.destPath(file, this.outPath)
     });
   }
 
   // where the files will be written to
-  destPath(mappedPath) {
-    return path.resolve(basePath, mappedPath);
+  destPath(mappedPath, outPath) {
+    return path.resolve(outPath || basePath, mappedPath);
   }
 
   // location of the string templates

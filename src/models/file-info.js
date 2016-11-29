@@ -20,7 +20,7 @@ class FileInfo {
     } else {
       const fileContent = this.renderTemplate();
       this.ui.writeDebug(`fileContent: ${fileContent}`);
-
+      console.log(this.mappedPath);
       if (!dryRun) {
         outputFileSync(this.mappedPath, fileContent);
         this.ui.writeCreate(this.mappedPath);

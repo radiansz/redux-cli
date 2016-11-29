@@ -17,12 +17,11 @@ export default class extends Task {
       // );
       // process.exit(1);
     // }
-
     const mainBlueprint = this.lookupBlueprint(blueprintName);
 
     const entity = {
       name: cliArgs.entity.name,
-      options: cliArgs.entity.options
+      options: cliArgs.entity.options,
     };
 
     const blueprintOptions = {
@@ -30,7 +29,8 @@ export default class extends Task {
       ui: this.ui,
       settings: this.settings,
       dryRun: cliArgs.dryRun,
-      entity
+      entity,
+      path: cliArgs.path,
     };
 
     mainBlueprint.install(blueprintOptions);
